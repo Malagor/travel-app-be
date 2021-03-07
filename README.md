@@ -13,3 +13,27 @@ https://travel-app-react-524c7.web.app/
 #### Authors:
 - [Александр @malagor](https://github.com/malagor) - TeamLead, Backend developer
 #### Mentor: 
+- [Сергей @MadaShindeInai](https://github.com/MadaShindeInai)
+
+### Stack:  
+1. Node Express - https://expressjs.com/ru/  
+
+
+### Used libs:  
+1. @types/uuid - https://www.npmjs.com/package/uuid  
+
+
+### Linters:
+ ----- prettier, eslint.
+
+### App description:  
+
+Frontend repo: https://github.com/Malagor/travel-app 
+
+
+## Available Scripts
+
+In the project directory, you can run:
+
+Runs the app in the development mode.\
+> `npm run start`
