@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "start": "node bin/www.ts",
-    "nodemon": "nodemon ./app.js.js localhost 8080"
+    "startDist": "node dist/bin/www.js",
+    "build": "tsc",
+    "nodemon": "nodemon ./app.ts localhost 8080"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",
