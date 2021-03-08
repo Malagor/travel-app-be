@@ -66,7 +66,6 @@ const filePath = `${__dirname}/${fileName}`;
 
 export const readFile = async (): Promise<DatabaseType> => {
   let data: DatabaseType;
-
   try {
     const content = await fsp.readFile(filePath, 'utf-8');
     const parsedList: DatabaseType = JSON.parse(content);
