@@ -1,6 +1,6 @@
 import {v4 as uuid} from 'uuid'
 import {Router} from "express";
-import * as storage from '../storage/mongo';
+import * as storage from '../storage/travel-app-fs';
 
 const router = Router();
 
@@ -93,14 +93,14 @@ router.post('/currency', async (req, res) => {
 // });
 //
 
-/* DELETE User */
-router.delete('/user/:id', async (req, res, next) => {
-
-  await storage.deleteUser(req.params['id']);
-
-  res
-    .status(204)
-    .json(null);
-});
+// /* DELETE User */
+// router.delete('/user/:id', async (req, res, next) => {
+//
+//   await storage.deleteUser(req.params['id']);
+//
+//   res
+//     .status(204)
+//     .json(null);
+// });
 
 export default router;
