@@ -1,15 +1,16 @@
 import {v4 as uuid} from 'uuid'
 import {Router} from "express";
-import * as storage from '../storage/travel-app-fs';
+import * as storage from '../storage/mongo';
 
 const router = Router();
 
-/* GET todos listing. */
+/* GET listings. */
 router.get('/country', async (req, res) => {
   const list = await storage.getCountriesList();
+  console.log('list', list);
   res.json(list);
 });
-
+//
 router.get('/country/:id', async (req, res) => {
   const item = await storage.getCountryById(req.params['id']);
 
@@ -21,6 +22,7 @@ router.get('/country/:id', async (req, res) => {
 });
 
 router.get('/user', async (req, res) => {
+  console.log('GET USERS');
   const users = await storage.getUsers();
   res.json(users);
 });
@@ -50,7 +52,7 @@ router.get('/currency/:code', async (req, res) => {
     });
 });
 
-/* POST User listing. */
+// /* POST User listing. */
 router.post('/user', async (req, res) => {
   const {body} = req;
   body.id = uuid();
@@ -59,7 +61,7 @@ router.post('/user', async (req, res) => {
   res.json(newBody);
 });
 
-/* POST Country listing. */
+// /* POST Country listing. */
 router.post('/country', async (req, res) => {
   const {body} = req;
   body.id = uuid();
@@ -67,8 +69,8 @@ router.post('/country', async (req, res) => {
   const newBody = await storage.createCountry(body);
   res.json(newBody);
 });
-
-/* POST Currency listing. */
+//
+// /* POST Currency listing. */
 router.post('/currency', async (req, res) => {
   const {body} = req;
 
@@ -90,15 +92,15 @@ router.post('/currency', async (req, res) => {
 //   res.json(newBody);
 // });
 //
-//
-// /* DELETE todos listing. */
-// router.delete('/:id', async (req, res, next) => {
-//
-//   await storage.remove(req.params['id']);
-//
-//   res
-//     .status(204)
-//     .json(null);
-// });
+
+/* DELETE User */
+router.delete('/user/:id', async (req, res, next) => {
+
+  await storage.deleteUser(req.params['id']);
+
+  res
+    .status(204)
+    .json(null);
+});
 
 export default router;
