@@ -7,37 +7,24 @@ const COUNTRIES_COLLECTION = 'countries';
 const CURRENCY_COLLECTION = 'currencies';
 
 const dbName = 'travel-app';
-const pass = 'Lm430#YBz%2ZVMMS';
-const encodedPass = 'Lm430%23YBz%252ZVMMS';
+const pass = '12345qwerty';
 
-const url = `mongodb+srv://travelAdmin:${encodedPass}@travel-app.xo4e2.mongodb.net?retryWrites=true&w=majority`;
+const url = `mongodb+srv://root:${pass}@travel-app-claster.y8dtm.mongodb.net/${dbName}?retryWrites=true&w=majority`;
 
 const getMongoInstance = async () => {
   let client;
   try {
-    client = await MongoClient.connect(url);
+    client = await MongoClient.connect(url, {useUnifiedTopology: true});
     return client.db(dbName);
   } catch (err) {
     console.error(err.stack);
-  } finally {
-    await client.close();
   }
 };
 
 const getCollection = async (collectionName: string): Promise<Collection> => {
   const db = await getMongoInstance().catch(console.dir);
-  return db.collection(collectionName);
+  return await db.collection(collectionName);
 };
-// function isDatabaseType(instance: DatabaseType): boolean {
-//   let isType: boolean = true;
-//
-//   isType = (instance.users !== undefined) && isType;
-//   isType = (instance.countriesList !== undefined) && isType;
-//   isType = (instance.currenciesList !== undefined) && isType;
-//
-//   return isType;
-// }
-
 
 // GET CountriesList
 export const getCountriesList = async (
@@ -45,131 +32,108 @@ export const getCountriesList = async (
   offset: number = 0
 ) => {
   const collection = await getCollection(COUNTRIES_COLLECTION);
+  const countryList = await collection.find({}).toArray();
 
-  const res = await collection.find({}).toArray();
-  console.log('res', res);
-  return res;
-  // return await answer.toArray().then(data => data);
-
-  // const countryList = data.countriesList;
-  //
-  // if (count === 0) {
-  //   return countryList.slice(offset)
-  // }
-  // return countryList.slice(offset, offset + count);
+  if (count) {
+    return countryList.slice(offset);
+  }
+  return countryList.slice(offset, offset + count);
 
 };
 
 // // GET CountryById
 export const getCountryById = async (id: string) => {
-
   const collection = await getCollection(COUNTRIES_COLLECTION);
-
   return collection.findOne({id});
-  // const data: DatabaseType = await readFile();
-  // const countryList = data.countriesList;
-  //
-  // return countryList.find((item: CountryType) => {
-  //   return item.id === id;
-  // })
 };
-//
-// // GET All Users
+
+// GET All Users
 export const getUsers = async () => {
   const collection = await getCollection(USER_COLLECTION);
   return await collection.find().toArray();
 };
 
-// // GET UserById
+// GET UserById
 export const getUserInfo = async (id: string) => {
   const collection = await getCollection(USER_COLLECTION);
-
   return collection.findOne({id});
-  // const data: DatabaseType = await readFile();
-  // const userData: DBUser[] = data.users;
-  //
-  // return userData.find((user: DBUser) => user.id === id);
 };
-//
-// // GET CurrenciesList
+
+// GET CurrenciesList
 export const getCurrenciesList = async () => {
   const collection = await getCollection(CURRENCY_COLLECTION);
   return collection.find({}).toArray();
-  // const data: DatabaseType = await readFile();
-  // return data.currenciesList;
 };
-//
-// // GET CurrencyByCode
+
+// GET CurrencyByCode
 export const getCurrencyByCode = async (code: string) => {
   const collection = await getCollection(CURRENCY_COLLECTION);
   return collection.findOne({code});
-  // const data: DatabaseType = await readFile();
-  // const currency: CurrencyType = data.currenciesList;
-  //
-  // return {[code]: currency[code]};
 };
-//
-// // POST CreateUser
+
+// POST CreateUser
 export const createUser = async (user: DBUser) => {
   const collection = await getCollection(USER_COLLECTION);
 
-  return collection.insertOne(user);
-
-  // await collection.insertOne(user, (err, result) => {
-  //
-  //   if(err){
-  //     console.log('Ошибка создания пользователя');
-  //     return console.log(err);
-  //   }
-  //   console.log(result.ops);
-  //   return result.ops;
-  //   // client.close();
-  // // return await collection.findOne({});
-  // });
+  user['_id'] = user.id;
+  await collection.insertOne(user);
+  return collection.findOne({id: user.id});
 };
 
-// // POST CreateCountry
+// POST CreateCountry
 export const createCountry = async (country: CountryType) => {
   const collection = await getCollection(COUNTRIES_COLLECTION);
-
-  return collection.insertOne(country);
-
-  // const data: DatabaseType = await readFile();
-  // const countries: CountryType[] = data.countriesList;
-  //
-  // countries.push(country);
-  // data.countriesList = countries;
-  //
-  // await writeFile(data);
-  // return country;
+  country['_id'] = country.id;
+  await collection.insertOne(country);
+  return collection.findOne({_id: country.id});
 };
-//
+
 // POST CreateCurrency
 export const createCurrency = async (currency: CurrencyType) => {
   const collection = await getCollection(CURRENCY_COLLECTION);
 
-  return collection.insertOne(currency);
-  // const data: DatabaseType = await readFile();
-  // let currencies: CurrencyType = data.currenciesList;
-  // currencies = {...currencies, ...currency};
-  // data.currenciesList = currencies;
-  //
-  // await writeFile(data);
-  // return currency;
+  await collection.insertOne(currency);
+  return collection.findOne({code: currency.code})
 };
 
 // UPDATE User
 export const updateUser = async (user: DBUser) => {
   const collection = await getCollection(USER_COLLECTION);
 
-  const {id} = user;
-  return collection.updateOne({id}, user);
+  const id = user.id;
+  const result = await collection.replaceOne({id}, user);
+  return result.ops[0];
 };
+
+// UPDATE Country
+export const updateCountry = async (country: CountryType) => {
+  const collection = await getCollection(CURRENCY_COLLECTION);
+
+  const _id = country.id;
+  const result = await collection.replaceOne({_id}, country);
+  return result.ops[0];
+};
+
+// UPDATE Currency
+export const updateCurrency = async (currency: CurrencyType) => {
+  const collection = await getCollection(CURRENCY_COLLECTION);
+
+  const code = currency.code;
+  const result = await collection.replaceOne({code}, currency);
+  return result.ops[0];
+};
+
 
 
 // DELETE User
 export const deleteUser = async (id: string) => {
   const collection = await getCollection(USER_COLLECTION);
+  const _id = id;
+  return collection.deleteOne({_id});
+};
 
-  return collection.deleteOne({id});
+// DELETE Currency
+export const deleteCurrency = async (code: string) => {
+  const collection = await getCollection(CURRENCY_COLLECTION);
+  return collection.deleteOne({code});
 };

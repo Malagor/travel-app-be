@@ -7,7 +7,10 @@ export type DBUser = {
   currencies: string[];
 };
 export type CurrencyType = {
-  [key: string]: { nameRu: string; nameEn: string; nameBe: string };
+  code: string;
+  nameRu: string;
+  nameEn: string;
+  nameBe: string;
 };
 
 export type LanguagesType = {
@@ -33,5 +36,5 @@ export type CountryType = {
 export type DatabaseType = {
   users: DBUser[];
   countriesList: CountryType[];
-  currenciesList: CurrencyType;
+  currenciesList: CurrencyType[];
 };

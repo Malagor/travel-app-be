@@ -91,17 +91,19 @@ export const getUserInfo = async (id: string): Promise<DBUser> => {
 };
 
 // GET CurrenciesList
-export const getCurrenciesList = async (): Promise<CurrencyType> => {
+export const getCurrenciesList = async (): Promise<CurrencyType[]> => {
   const data: DatabaseType = await readFile();
   return data.currenciesList;
 };
 
 // GET CurrencyByCode
-export const getCurrencyByCode = async (code: string): Promise<CurrencyType> => {
+export const getCurrencyByCode = async (code: string): Promise<{[key: string]:CurrencyType}> => {
   const data: DatabaseType = await readFile();
-  const currency: CurrencyType = data.currenciesList;
+  const currency: CurrencyType[] = data.currenciesList;
 
-  return {[code]: currency[code]};
+  const curCurrency = currency.find(((v: CurrencyType) => v.code === code));
+
+  return {[code]: {...curCurrency}};
 };
 
 // POST CreateUser
@@ -131,48 +133,11 @@ export const createCountry = async (country: CountryType): Promise<CountryType> 
 // POST CreateCurrency
 export const createCurrency = async (currency: CurrencyType): Promise<CurrencyType> => {
   const data: DatabaseType = await readFile();
-  let currencies: CurrencyType = data.currenciesList;
-  currencies = {...currencies, ...currency};
+  let currencies: CurrencyType[] = data.currenciesList;
+
+  currencies.push(currency);
   data.currenciesList = currencies;
 
   await writeFile(data);
   return currency;
 };
-
-
-// export const create = async (item: ItemType): Promise<ItemType | undefined> => {
-//   const list: ItemType[] = await readFile();
-//   list.push(item);
-//
-//   await writeFile(list);
-//
-//   return item;
-// };
-//
-// export const update = async (item: ItemType): Promise<ItemType> => {
-//   const list: ItemType[] = await readFile();
-//
-//   const index = list.findIndex(v => v.id === item.id);
-//
-//   if (index === -1) {
-//     throw new Error();
-//   }
-//   list[index] = item;
-//   await writeFile(list);
-//
-//   return item;
-// };
-//
-// export const remove = async (id: string): Promise<void> => {
-//   const list: ItemType[] = await readFile();
-//
-//   const index = list.findIndex(v => v.id === id);
-//
-//   list.splice(index, 1);
-//
-//   if (index === -1) {
-//     throw new Error();
-//   }
-//
-//   await writeFile(list);
-// };

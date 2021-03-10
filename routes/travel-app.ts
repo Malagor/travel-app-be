@@ -1,6 +1,6 @@
 import {v4 as uuid} from 'uuid'
 import {Router} from "express";
-import * as storage from '../storage/travel-app-fs';
+import * as storage from '../storage/mongo';
 
 const router = Router();
 
@@ -79,28 +79,46 @@ router.post('/currency', async (req, res) => {
 });
 
 
-//
-// /* PUT todos listing. */
-// router.put('/:id', async (req, res, next) => {
-//   const {body} = req;
-//   const newBody = await storage.update({
-//     ...body,
-//     id: req.params['id']
-//   });
-//
-//
-//   res.json(newBody);
-// });
-//
+/* PUT User listing. */
+router.put('/user', async (req, res) => {
+  const {body} = req;
+  const newBody = await storage.updateUser({
+    ...body
+  });
 
-// /* DELETE User */
-// router.delete('/user/:id', async (req, res, next) => {
-//
-//   await storage.deleteUser(req.params['id']);
-//
-//   res
-//     .status(204)
-//     .json(null);
-// });
+
+  res.json(newBody);
+});
+
+/* PUT Country listing. */
+router.put('/country', async (req, res) => {
+  const {body} = req;
+  const newBody = await storage.updateCountry({
+    ...body
+  });
+
+
+  res.json(newBody);
+});
+
+
+/* DELETE User */
+router.delete('/user/:id', async (req, res) => {
+
+  await storage.deleteUser(req.params['id']);
+
+  res
+    .status(204)
+    .json(null);
+});
+
+router.delete('/currency/:code', async (req, res) => {
+
+  await storage.deleteCurrency(req.params['code']);
+
+  res
+    .status(204)
+    .json(null);
+});
 
 export default router;
