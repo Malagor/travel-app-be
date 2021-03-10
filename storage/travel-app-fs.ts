@@ -1,55 +1,13 @@
 import {promises as fsp} from 'fs';
+import {
+  CurrencyType,
+  DatabaseType,
+  DBUser,
+  CountryType
+} from "./types";
 
 const COUNTRY_PER_PAGE = 8;
 
-export type DBUser = {
-  id: string;
-  name: string;
-  avatar: string;
-  lang: string;
-  theme: string;
-  currencies: string[];
-};
-export type CurrencyType = {
-  [key: string]: { nameRu: string; nameEn: string; nameBe: string };
-};
-
-export type StateUserInfo = {
-  id: string;
-  name: string;
-  avatar: string;
-  lang: string;
-};
-
-export type StateSettings = {
-  theme: string;
-  currencyList: CurrencyType;
-};
-export type LanguagesType = {
-  en?: string;
-  ru?: string;
-  be?: string;
-};
-export type StateCountry = {
-  id: string | number;
-  name: LanguagesType;
-  capital: LanguagesType;
-  currency?: CurrencyType;
-  description?: LanguagesType;
-  population?: number;
-  area?: number;
-  languages?: string[];
-  videos?: string[];
-  photos?: string[];
-  locale?: string;
-  timeZone?: string;
-};
-
-export type DatabaseType = {
-  users: DBUser[];
-  countriesList: StateCountry[];
-  currenciesList: CurrencyType;
-};
 
 function isDatabaseType(instance: DatabaseType): boolean {
   let isType: boolean = true;
@@ -66,7 +24,6 @@ const filePath = `${__dirname}/${fileName}`;
 
 export const readFile = async (): Promise<DatabaseType> => {
   let data: DatabaseType;
-
   try {
     const content = await fsp.readFile(filePath, 'utf-8');
     const parsedList: DatabaseType = JSON.parse(content);
@@ -97,7 +54,7 @@ export const writeFile = async (data: DatabaseType): Promise<DatabaseType> => {
 export const getCountriesList = async (
   count: number = COUNTRY_PER_PAGE,
   offset: number = 0
-): Promise<StateCountry[]> => {
+): Promise<CountryType[]> => {
   const data: DatabaseType = await readFile();
 
   const countryList = data.countriesList;
@@ -109,12 +66,12 @@ export const getCountriesList = async (
 };
 
 // GET CountryById
-export const getCountryById = async (id: string): Promise<StateCountry> => {
+export const getCountryById = async (id: string): Promise<CountryType> => {
 
   const data: DatabaseType = await readFile();
   const countryList = data.countriesList;
 
-  return countryList.find((item: StateCountry) => {
+  return countryList.find((item: CountryType) => {
     return item.id === id;
   })
 };
@@ -134,17 +91,19 @@ export const getUserInfo = async (id: string): Promise<DBUser> => {
 };
 
 // GET CurrenciesList
-export const getCurrenciesList = async (): Promise<CurrencyType> => {
+export const getCurrenciesList = async (): Promise<CurrencyType[]> => {
   const data: DatabaseType = await readFile();
   return data.currenciesList;
 };
 
 // GET CurrencyByCode
-export const getCurrencyByCode = async (code: string): Promise<CurrencyType> => {
+export const getCurrencyByCode = async (code: string): Promise<{[key: string]:CurrencyType}> => {
   const data: DatabaseType = await readFile();
-  const currency: CurrencyType = data.currenciesList;
+  const currency: CurrencyType[] = data.currenciesList;
 
-  return {[code]: currency[code]};
+  const curCurrency = currency.find(((v: CurrencyType) => v.code === code));
+
+  return {[code]: {...curCurrency}};
 };
 
 // POST CreateUser
@@ -160,9 +119,9 @@ export const createUser = async (user: DBUser): Promise<DBUser> => {
 };
 
 // POST CreateCountry
-export const createCountry = async (country: StateCountry): Promise<StateCountry> => {
+export const createCountry = async (country: CountryType): Promise<CountryType> => {
   const data: DatabaseType = await readFile();
-  const countries: StateCountry[] = data.countriesList;
+  const countries: CountryType[] = data.countriesList;
 
   countries.push(country);
   data.countriesList = countries;
@@ -174,49 +133,11 @@ export const createCountry = async (country: StateCountry): Promise<StateCountry
 // POST CreateCurrency
 export const createCurrency = async (currency: CurrencyType): Promise<CurrencyType> => {
   const data: DatabaseType = await readFile();
-  let currencies: CurrencyType = data.currenciesList;
-  currencies = {...currencies, ...currency};
+  let currencies: CurrencyType[] = data.currenciesList;
+
+  currencies.push(currency);
   data.currenciesList = currencies;
 
   await writeFile(data);
   return currency;
 };
-
-
-
-// export const create = async (item: ItemType): Promise<ItemType | undefined> => {
-//   const list: ItemType[] = await readFile();
-//   list.push(item);
-//
-//   await writeFile(list);
-//
-//   return item;
-// };
-//
-// export const update = async (item: ItemType): Promise<ItemType> => {
-//   const list: ItemType[] = await readFile();
-//
-//   const index = list.findIndex(v => v.id === item.id);
-//
-//   if (index === -1) {
-//     throw new Error();
-//   }
-//   list[index] = item;
-//   await writeFile(list);
-//
-//   return item;
-// };
-//
-// export const remove = async (id: string): Promise<void> => {
-//   const list: ItemType[] = await readFile();
-//
-//   const index = list.findIndex(v => v.id === id);
-//
-//   list.splice(index, 1);
-//
-//   if (index === -1) {
-//     throw new Error();
-//   }
-//
-//   await writeFile(list);
-// };
