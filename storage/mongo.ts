@@ -88,6 +88,8 @@ export const getCurrencyByCode = async (code: string) => {
 // GET Geo data
 export const getGeo = async () => {
   const collection = await getCollection(GEO_COLLECTION);
+  console.log('getGeo');
+  
   return collection.find({}).toArray();
 };
 
