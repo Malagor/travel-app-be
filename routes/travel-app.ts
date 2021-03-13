@@ -6,7 +6,13 @@ const router = Router();
 
 /* GET listings. */
 router.get('/country', async (req, res) => {
-  const list = await storage.getCountriesList();
+  // console.log('req.params["count"]', req.params['count']);
+  const filter = req.query.filter? req.query.filter.toString(): "";
+  const count = req.query.count ? req.query.count : 0;
+  const offset = req.query.offset ? req.query.offset : 0;
+  const lang = req.query.lang ? req.query.lang.toString() : 'ru';
+
+  const list = await storage.getCountriesList(+count, +offset, filter, lang);
   console.log('list', list);
   res.json(list);
 });
