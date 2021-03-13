@@ -58,6 +58,13 @@ router.get('/currency/:code', async (req, res) => {
     });
 });
 
+router.get('/geo', async (req, res) => {
+  console.log('/geo');
+  
+  const geoData = await storage.getGeo();
+  res.json(geoData);
+});
+
 // /* POST User listing. */
 router.post('/user', async (req, res) => {
   const {body} = req;

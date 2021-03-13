@@ -5,6 +5,7 @@ const COUNTRY_PER_PAGE = 8;
 const USER_COLLECTION = 'users';
 const COUNTRIES_COLLECTION = 'countries';
 const CURRENCY_COLLECTION = 'currencies';
+const GEO_COLLECTION = 'geo';
 
 const dbName = 'travel-app';
 const pass = 'YA4LhInD3NhKn0n2';
@@ -82,6 +83,14 @@ export const getCurrenciesList = async () => {
 export const getCurrencyByCode = async (code: string) => {
   const collection = await getCollection(CURRENCY_COLLECTION);
   return collection.findOne({code});
+};
+
+// GET Geo data
+export const getGeo = async () => {
+  const collection = await getCollection(GEO_COLLECTION);
+  console.log('getGeo');
+  
+  return collection.find({}).toArray();
 };
 
 // POST CreateUser
