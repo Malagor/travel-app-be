@@ -6,14 +6,12 @@ const router = Router();
 
 /* GET listings. */
 router.get('/country', async (req, res) => {
-  // console.log('req.params["count"]', req.params['count']);
-  const filter = req.query.filter? req.query.filter.toString(): "";
+  const filter = req.query.filter ? req.query.filter.toString() : "";
   const count = req.query.count ? req.query.count : 0;
   const offset = req.query.offset ? req.query.offset : 0;
   const lang = req.query.lang ? req.query.lang.toString() : 'ru';
 
   const list = await storage.getCountriesList(+count, +offset, filter, lang);
-  console.log('list', list);
   res.json(list);
 });
 //
@@ -60,12 +58,12 @@ router.get('/currency/:code', async (req, res) => {
 
 router.get('/geo', async (req, res) => {
   console.log('/geo');
-  
+
   const geoData = await storage.getGeo();
   res.json(geoData);
 });
 
-// /* POST User listing. */
+/* POST User listing. */
 router.post('/user', async (req, res) => {
   const {body} = req;
   body.id = uuid();
@@ -74,7 +72,7 @@ router.post('/user', async (req, res) => {
   res.json(newBody);
 });
 
-// /* POST Country listing. */
+/* POST Country listing. */
 router.post('/country', async (req, res) => {
   const {body} = req;
   body.id = uuid();
@@ -82,8 +80,19 @@ router.post('/country', async (req, res) => {
   const newBody = await storage.createCountry(body);
   res.json(newBody);
 });
-//
-// /* POST Currency listing. */
+
+router.post('/country/:id/attraction', async (req, res) => {
+  console.log('route');
+  const countryId = req.params['id'];
+  const {body} = req;
+  body.id = uuid();
+  body.rating = {"sum": 0, "count": 0};
+
+  await storage.createAttractions(countryId, body);
+  res.json(body);
+});
+
+/* POST Currency listing. */
 router.post('/currency', async (req, res) => {
   const {body} = req;
 
@@ -112,6 +121,24 @@ router.put('/country', async (req, res) => {
 
 
   res.json(newBody);
+});
+
+router.put('/country/:id/attraction', async (req, res) => {
+  const {body} = req;
+  body.countryId = req.params['id'];
+  let newRating;
+
+  try {
+
+      newRating = await storage.updateRating({...body});
+
+  } catch (e) {
+    console.log(e.message);
+    res.json('Error');
+  }
+
+  res.json(newRating);
+
 });
 
 
