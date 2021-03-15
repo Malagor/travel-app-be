@@ -210,7 +210,7 @@ export const updateRating = async (data: UpdateRatingType) => {
     userAttrArray[indexAttr].rating = rating;
   }
   user.attractionRates = userAttrArray;
-  const resUser = await updateUser(user);
+  await updateUser(user);
 
   // add or update rating in UserDate
   const countryCollection = await getCollection(COUNTRIES_COLLECTION);
@@ -229,8 +229,14 @@ export const updateRating = async (data: UpdateRatingType) => {
 
   countryAttr[indexCountryAttr].rating = newRatingAttr;
   country.attractions = countryAttr;
-  const resCountry = await updateCountry(country);
-  return [resUser, resCountry];
+  await updateCountry(country);
+
+  return {
+    attrId: attractionId,
+    countryId: countryId,
+    userId: userId,
+    userRating: rating,
+    attrRating: newRatingAttr};
 };
 
 
