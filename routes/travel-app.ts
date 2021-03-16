@@ -74,7 +74,6 @@ router.get('/geo', async (req, res) => {
 /* POST User listing. */
 router.post('/user', async (req, res) => {
   const {body} = req;
-  body.id = uuid();
 
   const newBody = await storage.createUser(body);
   res.json(newBody);
