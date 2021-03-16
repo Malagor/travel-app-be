@@ -10,7 +10,7 @@ const GEO_COLLECTION = 'geo';
 const dbName = 'travel-app';
 const pass = 'YA4LhInD3NhKn0n2';
 
-const url = `mongodb+srv://root:${pass}@travel-app-claster.y8dtm.mongodb.net/${dbName}?retryWrites=true&w=majority`;
+const url = `mongodb+srv://root:${pass}@cluster0.tnkge.mongodb.net/${dbName}?retryWrites=true&w=majority`;
 
 const getMongoInstance = async () => {
   let client;
