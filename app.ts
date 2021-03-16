@@ -6,7 +6,10 @@ import todoRouter from "./routes/travel-app";
 const app = express();
 
 app.use(logger('dev'));
-app.use(cors());
+app.use(cors({
+  origin: '*',
+  optionsSuccessStatus: 204,
+}));
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 
