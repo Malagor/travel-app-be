@@ -67,7 +67,7 @@ export const getCountryById = async (id: string) => {
 export const getAttractions = async (id: string) => {
   const collection = await getCollection(COUNTRIES_COLLECTION);
   const country: CountryType = await collection.findOne({id});
-  
+
   return country.attractions;
 };
 
@@ -104,7 +104,7 @@ export const getGeo = async () => {
 // POST CreateUser
 export const createUser = async (user: DBUser) => {
   const collection = await getCollection(USER_COLLECTION);  
-  user['_id'] = user.id;  
+  user['_id'] = user.id; 
   await collection.insertOne(user);
   return collection.findOne({id: user.id});
 };
