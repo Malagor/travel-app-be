@@ -25,6 +25,17 @@ router.get('/country/:id', async (req, res) => {
     });
 });
 
+// GET Attractions
+router.get('/country/:id/attraction', async (req, res) => {
+  const item = await storage.getAttractions(req.params['id']);
+
+  res
+    .status(item ? 200 : 404)
+    .json(item ?? {
+      statusCode: 404
+    });
+});
+
 router.get('/user', async (req, res) => {
   const users = await storage.getUsers();
   res.json(users);
@@ -64,7 +75,7 @@ router.get('/geo', async (req, res) => {
 router.post('/user', async (req, res) => {
   const {body} = req;
   body.id = uuid();
-  
+
   const newBody = await storage.createUser(body);
   res.json(newBody);
 });
@@ -79,7 +90,6 @@ router.post('/country', async (req, res) => {
 });
 
 router.post('/country/:id/attraction', async (req, res) => {
-  console.log('route');
   const countryId = req.params['id'];
   const {body} = req;
   body.id = uuid();

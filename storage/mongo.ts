@@ -63,6 +63,14 @@ export const getCountryById = async (id: string) => {
   return collection.findOne({id});
 };
 
+// GET Attractions
+export const getAttractions = async (id: string) => {
+  const collection = await getCollection(COUNTRIES_COLLECTION);
+  const country: CountryType = await collection.findOne({id});
+  
+  return country.attractions;
+};
+
 // GET All Users
 export const getUsers = async () => {
   const collection = await getCollection(USER_COLLECTION);
@@ -90,8 +98,6 @@ export const getCurrencyByCode = async (code: string) => {
 // GET Geo data
 export const getGeo = async () => {
   const collection = await getCollection(GEO_COLLECTION);
-  console.log('getGeo');
-
   return collection.find({}).toArray();
 };
 
