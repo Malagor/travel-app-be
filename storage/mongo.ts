@@ -97,9 +97,8 @@ export const getGeo = async () => {
 
 // POST CreateUser
 export const createUser = async (user: DBUser) => {
-  const collection = await getCollection(USER_COLLECTION);
-
-  user['_id'] = user.id;
+  const collection = await getCollection(USER_COLLECTION);  
+  user['_id'] = user.id;  
   await collection.insertOne(user);
   return collection.findOne({id: user.id});
 };
@@ -158,35 +157,6 @@ export const updateCurrency = async (currency: CurrencyType) => {
   const result = await collection.replaceOne({code}, currency);
   return result.ops[0];
 };
-
-// const updateUserRating = async (data: UpdateRatingType): Promise<any> => {
-//   const {attractionId, rating, userId} = data;
-//   let isUpdate = false;
-//   let oldRating = 0;
-//
-//   // add or update rating in UserDate
-//   const userCollection = await getCollection(USER_COLLECTION);
-//   const user: DBUser = await userCollection.findOne({id: userId});
-//   const userAttrArray: { attrId: string; rating: number; }[] = user.attractionRates || [];
-//   const indexAttr = userAttrArray.findIndex(val => val?.attrId === attractionId);
-//
-//   if (indexAttr !== -1) {
-//     // add new rating
-//     userAttrArray.push({attrId: attractionId, rating});
-//   } else {
-//     // update rating
-//     isUpdate = true;
-//     oldRating = userAttrArray[indexAttr].rating;
-//     userAttrArray[indexAttr].rating = rating;
-//   }
-//   user.attractionRates = userAttrArray;
-//   await updateUser(user);
-//
-//   return {
-//     isUpdate,
-//     oldRating
-//   }
-// };
 
 // UPDATE Rating Attraction
 export const updateRating = async (data: UpdateRatingType) => {
