@@ -10,6 +10,7 @@ const GEO_COLLECTION = 'geo';
 const dbName = 'travel-app';
 const pass = 'YA4LhInD3NhKn0n2';
 
+// const urlLocal = 'mongodb://localhost:27017/?readPreference=primary&appname=MongoDB%20Compass&ssl=false';
 const url = `mongodb+srv://root:${pass}@cluster0.tnkge.mongodb.net/${dbName}?retryWrites=true&w=majority`;
 
 const getMongoInstance = async () => {
@@ -60,13 +61,33 @@ export const getCountriesList = async (
 // GET CountryById
 export const getCountryById = async (id: string) => {
   const collection = await getCollection(COUNTRIES_COLLECTION);
-  return collection.findOne({id});
+  const country: CountryType = await collection.findOne({id});
+  return country;
+};
+
+export const getUserWhoRateAttraction = async (id: string) => {
+  const userCollection = await getCollection(USER_COLLECTION);
+
+  const user = await userCollection.find({attractionRates: {$elemMatch: {attrId: id}}}).toArray();
+  return {
+    [id]: {
+    users: user.map((us: DBUser) => {
+      return {
+        name: us.name,
+        avatar: us.avatar,
+        rating: us.attractionRates.find(attr => {
+          return attr.attrId === id;
+        }).rating
+      }
+    })}
+  };
 };
 
 // GET Attractions
 export const getAttractions = async (id: string) => {
-  const collection = await getCollection(COUNTRIES_COLLECTION);
-  const country: CountryType = await collection.findOne({id});
+  const userCollection = await getCollection(USER_COLLECTION);
+
+  const country: CountryType = await userCollection.findOne({id});
 
   return country.attractions;
 };
@@ -103,8 +124,8 @@ export const getGeo = async () => {
 
 // POST CreateUser
 export const createUser = async (user: DBUser) => {
-  const collection = await getCollection(USER_COLLECTION);  
-  user['_id'] = user.id; 
+  const collection = await getCollection(USER_COLLECTION);
+  user['_id'] = user.id;
   await collection.insertOne(user);
   return collection.findOne({id: user.id});
 };
@@ -212,7 +233,8 @@ export const updateRating = async (data: UpdateRatingType) => {
     countryId: countryId,
     userId: userId,
     userRating: rating,
-    attrRating: newRatingAttr};
+    attrRating: newRatingAttr
+  };
 };
 
 

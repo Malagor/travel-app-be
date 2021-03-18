@@ -1,6 +1,8 @@
 import {v4 as uuid} from 'uuid'
 import {Router} from "express";
 import * as storage from '../storage/mongo';
+import {getUserWhoRateAttraction} from '../storage/mongo';
+import {AttractionType} from "../storage/types";
 
 const router = Router();
 
@@ -14,13 +16,31 @@ router.get('/country', async (req, res) => {
   const list = await storage.getCountriesList(+count, +offset, filter, lang);
   res.json(list);
 });
-//
+
+// Get Country by Id with attractions rates
 router.get('/country/:id', async (req, res) => {
-  const item = await storage.getCountryById(req.params['id']);
+  const country = await storage.getCountryById(req.params['id']);
+
+  const usersArray = await Promise.all(country.attractions.map(async (attr: AttractionType) => {
+    return await getUserWhoRateAttraction(attr.id);
+  }));
+
+  const newAttr = country.attractions.map(attr => {
+    const index = usersArray.findIndex(u => Object.keys(u)[0] === attr.id);
+    return {
+      ...attr,
+      users: usersArray[index][attr.id].users
+    };
+  });
+
+  const body = {
+    ...country,
+    attractions: newAttr
+  };
 
   res
-    .status(item ? 200 : 404)
-    .json(item ?? {
+    .status(body ? 200 : 404)
+    .json(body ?? {
       statusCode: 404
     });
 });
@@ -135,7 +155,7 @@ router.put('/country/:id/attraction', async (req, res) => {
   let newRating;
 
   try {
-      newRating = await storage.updateRating({...body});
+    newRating = await storage.updateRating({...body});
   } catch (e) {
     console.log(e.message);
     res.json('Error');
