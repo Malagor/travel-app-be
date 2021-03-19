@@ -11,7 +11,7 @@ const dbName = 'travel-app';
 const pass = 'YA4LhInD3NhKn0n2';
 
 // const urlLocal = 'mongodb://localhost:27017/?readPreference=primary&appname=MongoDB%20Compass&ssl=false';
-const url = `mongodb+srv://root:${pass}@cluster0.tnkge.mongodb.net/${dbName}?retryWrites=true&w=majority`;
+const url = `mongodb+srv://root:${pass}@cluster0.msbfv.mongodb.net/${dbName}?retryWrites=true&w=majority`;
 
 const getMongoInstance = async () => {
   let client;
