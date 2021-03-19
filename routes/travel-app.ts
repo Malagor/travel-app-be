@@ -185,4 +185,20 @@ router.delete('/currency/:code', async (req, res) => {
     .json(null);
 });
 
+router.patch('/user/:id/lang', async (req, res) => {
+
+  const {body} = req;
+  body.userId = req.params['id'];
+
+  let newUserData;
+  try {
+    newUserData = await storage.updateLanguage({...body});
+  } catch (e) {
+    console.log(e.message);
+    res.json('Error');
+  }
+
+  res.json(newUserData);
+});
+
 export default router;
