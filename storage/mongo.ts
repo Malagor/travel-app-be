@@ -71,15 +71,16 @@ export const getUserWhoRateAttraction = async (id: string) => {
   const user = await userCollection.find({attractionRates: {$elemMatch: {attrId: id}}}).toArray();
   return {
     [id]: {
-    users: user.map((us: DBUser) => {
-      return {
-        name: us.name,
-        avatar: us.avatar,
-        rating: us.attractionRates.find(attr => {
-          return attr.attrId === id;
-        }).rating
-      }
-    })}
+      users: user.map((us: DBUser) => {
+        return {
+          name: us.name,
+          avatar: us.avatar,
+          rating: us.attractionRates.find(attr => {
+            return attr.attrId === id;
+          }).rating
+        }
+      })
+    }
   };
 };
 
@@ -249,4 +250,17 @@ export const deleteUser = async (id: string) => {
 export const deleteCurrency = async (code: string) => {
   const collection = await getCollection(CURRENCY_COLLECTION);
   return collection.deleteOne({code});
+};
+
+// PATCH User Language
+export const updateLanguage = async (body: { lang: string, userId: string }) => {
+  console.log('body', body);
+  const userCollection = await getCollection(USER_COLLECTION);
+  const res = await userCollection.findOneAndUpdate(
+    {id: body.userId},
+    {$set: {lang: body.lang}},
+    {returnOriginal: false});
+
+  console.log('res', res.value);
+  return res.value;
 };
